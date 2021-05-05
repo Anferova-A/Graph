@@ -300,6 +300,133 @@ namespace IGraph_Anferova
             return result;
         }
 
+        public enum Part
+        {
+            None,
+            First,
+            Second
+        }
+
+        /// <summary>
+        /// Проверка графа на двудольность
+        /// (https://e-maxx.ru/algo/bipartite_checking)
+        /// </summary>
+        /// <returns>
+        /// True, если граф двудольный, в противном случе False
+        /// </returns>
+        public IDictionary<string, Part> CheckBipartition()
+        {
+            // Инициализация словаря вершин-долей
+            var partDictionary = new Dictionary<string, Part>();
+            foreach (var item in vertecies.Keys)
+            {
+                partDictionary.Add(item, Part.None);
+            }
+
+            // запускаем серию обходов в ширину
+            foreach (var startV in vertecies.Keys)
+            {
+                // Если вершина не посещена, начинаем обход ширину из нее
+                if (partDictionary[startV] is Part.None)
+                {
+                    // Инициализируем очередь
+                    var q = new Queue<string>();
+                    q.Enqueue(startV);
+
+                    // Помещаем стартовую вершину в первую долю
+                    partDictionary[startV] = Part.First;
+
+                    while (q.Count > 0)
+                    {
+                        var now = q.Dequeue();
+                        foreach (var adj in vertecies[now].Keys) // проходим по смежным вершинам
+                        {
+                            // если вершина еще не посещена 
+                            if (partDictionary[adj] is Part.None)
+                            {
+                                // то добавляем ее в очередь
+                                q.Enqueue(adj);
+
+                                // и помещаем ее в какую-то долю
+                                partDictionary[adj] = partDictionary[now] == Part.First
+                                                    ? Part.Second
+                                                    : Part.First;
+                            }
+                            // если вершина посещена, смотрим, чтобы они не были из одной доли
+                            else if (partDictionary[now] == partDictionary[adj])
+                            {
+                                return null;
+                            }
+                        }
+
+                    }
+
+                }
+            }
+
+
+            return partDictionary;
+        }
+
+      
+
+
+        /// <summary>
+        /// Алгоритм Куна для поиска максимального паросочетания
+        /// (http://e-maxx.ru/algo/kuhn_matching)
+        /// </summary>
+        public IDictionary<string, string> CoonAlgorithm()
+        {
+            var parts = CheckBipartition();
+
+            if (parts == null)
+                return null;
+
+            var firstPart = parts.Where(item => item.Value == Part.First)
+                                 .Select(item => item.Key);
+
+            var secondPart = parts.Where(item => item.Value == Part.Second)
+                                 .Select(item => item.Key);
+
+            var matching = new Dictionary<string, string>();
+            foreach (var item in secondPart)
+            {
+                matching.Add(item, null);
+            }
+
+            foreach (var item in firstPart)
+            {
+                var used = new Dictionary<string, bool>();
+                foreach (var v in firstPart)
+                {
+                    used.Add(v, false);
+                }
+
+                DfsKun(item, used, matching);
+            }
+
+
+            return matching;
+        }
+
+        private bool DfsKun(string v, Dictionary<string, bool> used, Dictionary<string, string> matching)
+        {
+            if (used[v])
+                return false;
+
+            used[v] = true;
+
+            foreach (var to in vertecies[v].Keys)
+            {
+                if (matching[to] == null || DfsKun(matching[to], used, matching))
+                {
+                    matching[to] = v;
+                    return true;
+                }
+            }
+            return false;
+        }
+
         #region Временно
         public Dictionary<string, string> BFS(string u)
         {

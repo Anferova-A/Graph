@@ -11,13 +11,13 @@ namespace IGraph_Anferova
 {
     class Graph
     {
-        private Dictionary<string, Dictionary<string, int>> vertecies;
+        private Dictionary<string, Dictionary<string, int>> vertices;
         public readonly bool focus; //ориентированность
         public readonly bool weigh; //взвешенность
         //конструктор пустой граф
         public Graph(bool focus = false, bool weigh = false)
         {
-            vertecies = new Dictionary<string, Dictionary<string, int>>();
+            vertices = new Dictionary<string, Dictionary<string, int>>();
             this.focus = focus;
             this.weigh = weigh;
         }
@@ -25,7 +25,7 @@ namespace IGraph_Anferova
         //конструктор заполнение графа из файла
         public Graph(string inputName)
         {
-            vertecies = new Dictionary<string, Dictionary<string, int>>();
+            vertices = new Dictionary<string, Dictionary<string, int>>();
             using (StreamReader input = new StreamReader(inputName))
             {
                 if (input.ReadLine() == "True")
@@ -69,15 +69,15 @@ namespace IGraph_Anferova
         //КОНСТРУКТОР - КОПИЯ
         public Graph(Graph g)
         {
-            vertecies = new Dictionary<string, Dictionary<string, int>>();
+            vertices = new Dictionary<string, Dictionary<string, int>>();
             focus = g.focus;
             weigh = g.weigh;
-            foreach (var v in g.vertecies)
+            foreach (var v in g.vertices)
             {
                 AddVertex(v.Key);
             }
 
-            foreach (var v in g.vertecies)
+            foreach (var v in g.vertices)
             {
                 foreach (var e in v.Value)
                 {
@@ -90,9 +90,9 @@ namespace IGraph_Anferova
 
         public bool AddVertex(string vertexName)
         {
-            if (!vertecies.ContainsKey(vertexName))
+            if (!vertices.ContainsKey(vertexName))
             {
-                vertecies.Add(vertexName, new Dictionary<string, int>());
+                vertices.Add(vertexName, new Dictionary<string, int>());
                 return true;
             }
             else
@@ -103,11 +103,11 @@ namespace IGraph_Anferova
 
         public bool AddEdge(string a, string b, int weigth = 0)
         {
-            if (vertecies.ContainsKey(a) && vertecies.ContainsKey(b))
+            if (vertices.ContainsKey(a) && vertices.ContainsKey(b))
             {
-                if (!vertecies[a].ContainsKey(b))
+                if (!vertices[a].ContainsKey(b))
                 {
-                    vertecies[a].Add(b, weigth);
+                    vertices[a].Add(b, weigth);
                 }
                 else
                 {
@@ -115,7 +115,7 @@ namespace IGraph_Anferova
                 }
                 if (!focus)
                 {
-                    vertecies[b].Add(a, weigth);
+                    vertices[b].Add(a, weigth);
                 }
                 return true;
             }
@@ -127,24 +127,24 @@ namespace IGraph_Anferova
 
         public bool DeleteVertex(string vertexName)
         {
-            foreach (var ver in vertecies)
+            foreach (var ver in vertices)
             {
                 ver.Value.Remove(vertexName);
             }
-            return vertecies.Remove(vertexName);
+            return vertices.Remove(vertexName);
         }
 
         public bool DeleteEdge(string a, string b)
         {
-            if (vertecies.ContainsKey(a) && vertecies.ContainsKey(b))
+            if (vertices.ContainsKey(a) && vertices.ContainsKey(b))
             {
                 if (focus)
                 {
-                    return vertecies[a].Remove(b) && vertecies[b].Remove(a);
+                    return vertices[a].Remove(b) && vertices[b].Remove(a);
                 }
                 else
                 {
-                    return vertecies[a].Remove(b);
+                    return vertices[a].Remove(b);
                 }
             }
             else
@@ -160,12 +160,12 @@ namespace IGraph_Anferova
             result.Add(focus.ToString());
             result.Add(weigh.ToString());
             string ver = "";
-            foreach (var v in vertecies.Keys)
+            foreach (var v in vertices.Keys)
             {
                 ver += v + " ";
             }
             result.Add(ver);
-            foreach (var v in vertecies)
+            foreach (var v in vertices)
             {
 
                 foreach (var e in v.Value)
@@ -192,7 +192,7 @@ namespace IGraph_Anferova
         public List<string> SpisokSmezh()
         {
             List<string> result = new List<string>();
-            foreach (var v in vertecies)
+            foreach (var v in vertices)
             {
                 string str = string.Format("{0}: ", v.Key);
                 if (weigh)
@@ -217,7 +217,7 @@ namespace IGraph_Anferova
 
         public bool ContainsVertex(string vertexname)
         {
-            if (vertecies.ContainsKey(vertexname))
+            if (vertices.ContainsKey(vertexname))
             {
                 return true;
             }
@@ -234,7 +234,7 @@ namespace IGraph_Anferova
         {
             visited[vertexname] = true;
             a.Add(vertexname);
-            foreach (var v in vertecies[vertexname].Keys)
+            foreach (var v in vertices[vertexname].Keys)
             {
                 if (visited[v] == false)
                 {
@@ -245,19 +245,19 @@ namespace IGraph_Anferova
 
         public bool Kossaru()
         {
-            if (vertecies.Count == 0)
+            if (vertices.Count == 0)
             {
                 return true;
             }
             List<string> l = new List<string>();
             Dictionary<string, bool> visited = new Dictionary<string, bool>();
-            foreach (var v in vertecies.Keys)
+            foreach (var v in vertices.Keys)
             {
                 visited.Add(v, false);
             }
-            DFS(l, vertecies.ElementAt(0).Key, visited);
+            DFS(l, vertices.ElementAt(0).Key, visited);
             List<string> l1 = new List<string>();
-            if (l.Count() < vertecies.Keys.Count())
+            if (l.Count() < vertices.Keys.Count())
             {
                 return false;
             }
@@ -265,12 +265,12 @@ namespace IGraph_Anferova
             {
                 Graph grrev = this.GraphReverse();
                 Dictionary<string, bool> visited1 = new Dictionary<string, bool>();
-                foreach (var v in vertecies.Keys)
+                foreach (var v in vertices.Keys)
                 {
                     visited1.Add(v, false);
                 }
-                grrev.DFS(l1, grrev.vertecies.ElementAt(0).Key, visited1);
-                if (l1.Count() < grrev.vertecies.Keys.Count())
+                grrev.DFS(l1, grrev.vertices.ElementAt(0).Key, visited1);
+                if (l1.Count() < grrev.vertices.Keys.Count())
                 {
                     return false;
                 }
@@ -285,12 +285,12 @@ namespace IGraph_Anferova
         {
             Graph result = new Graph(focus, weigh);
 
-            foreach (var v in vertecies)
+            foreach (var v in vertices)
             {
                 result.AddVertex(v.Key);
             }
 
-            foreach (var v in vertecies)
+            foreach (var v in vertices)
             {
                 foreach (var e in v.Value)
                 {
@@ -318,13 +318,13 @@ namespace IGraph_Anferova
         {
             // Инициализация словаря вершин-долей
             var partDictionary = new Dictionary<string, Part>();
-            foreach (var item in vertecies.Keys)
+            foreach (var item in vertices.Keys)
             {
                 partDictionary.Add(item, Part.None);
             }
 
             // запускаем серию обходов в ширину
-            foreach (var startV in vertecies.Keys)
+            foreach (var startV in vertices.Keys)
             {
                 // Если вершина не посещена, начинаем обход ширину из нее
                 if (partDictionary[startV] is Part.None)
@@ -339,7 +339,7 @@ namespace IGraph_Anferova
                     while (q.Count > 0)
                     {
                         var now = q.Dequeue();
-                        foreach (var adj in vertecies[now].Keys) // проходим по смежным вершинам
+                        foreach (var adj in vertices[now].Keys) // проходим по смежным вершинам
                         {
                             // если вершина еще не посещена 
                             if (partDictionary[adj] is Part.None)
@@ -416,7 +416,7 @@ namespace IGraph_Anferova
 
             used[v] = true;
 
-            foreach (var to in vertecies[v].Keys)
+            foreach (var to in vertices[v].Keys)
             {
                 if (matching[to] == null || DfsKun(matching[to], used, matching))
                 {
@@ -432,7 +432,7 @@ namespace IGraph_Anferova
         {
             Queue<string> q = new Queue<string>();
             Dictionary<string, bool> visited = new Dictionary<string, bool>();
-            foreach (var v in vertecies.Keys)
+            foreach (var v in vertices.Keys)
             {
                 visited[v] = false;
             }
@@ -446,7 +446,7 @@ namespace IGraph_Anferova
             while (q.Count > 0)
             {
                 string now = q.Dequeue();
-                foreach (var v in vertecies[now].Keys)
+                foreach (var v in vertices[now].Keys)
                 {
                     if (!visited[v])
                     {
@@ -494,7 +494,6 @@ namespace IGraph_Anferova
         /// <returns>Словарь паросочетаний (Null, если граф не двудольный)</returns>
         public IDictionary<string, string> FordFulkerson()
         {
-            var fordGraph = new Graph(true);
 
             var parts = CheckBipartition();
 
@@ -531,7 +530,7 @@ namespace IGraph_Anferova
                 isPath = false;
 
                 // fill
-                foreach (var item in vertecies.Keys)
+                foreach (var item in vertices.Keys)
                 {
                     vis[item] = false;
                 }
@@ -558,7 +557,7 @@ namespace IGraph_Anferova
 
             vis[x] = true;
 
-            foreach (var y in vertecies[x].Keys)
+            foreach (var y in vertices[x].Keys)
             {
                 if (py[y] == null)
                 {
@@ -578,6 +577,124 @@ namespace IGraph_Anferova
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Алгоритм Хопкрофта—Карпа для поиска максимального паросочетания
+        /// (<see href="link">https://clck.ru/UksT4</see>)
+        /// </summary>
+        /// <returns>Словарь паросочетаний (Null, если граф не двудольный)</returns>
+        public IDictionary<string, string> HopcroftKarp()
+        {
+            AddVertex("NIL");
+
+            var parts = CheckBipartition();
+
+            if (parts == null)
+                return null;
+
+            var firstPart = parts.Where(item => item.Value == Part.First)
+                                 .Select(item => item.Key);
+
+            var secondPart = parts.Where(item => item.Value == Part.Second)
+                                 .Select(item => item.Key);
+
+            var partU = new Dictionary<string, string>();
+            foreach (var u in firstPart)
+            {
+                partU[u] = "NIL";
+            }
+
+            var partV = new Dictionary<string, string>();
+            foreach (var v in secondPart)
+            {
+                partV[v] = "NIL";
+            }
+
+            var dist = new Dictionary<string, int>();
+
+            while (BfsHopcroft(partU, partV, dist))
+            {
+                foreach (var u in firstPart)
+                {
+                    if (partU[u] == "NIL")
+                    {
+                        DfsHopcroft(u, partU, partV, dist);
+
+                    }
+                }
+            }
+
+
+            DeleteVertex("NIL");
+
+            foreach (var item in partU)
+            {
+                Console.WriteLine($"{item.Key} - {item.Value}");
+            }
+            return partU.Where(item => item.Value != "NIL")
+                        .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        private bool DfsHopcroft(string u, Dictionary<string, string> partU, Dictionary<string, string> partV, Dictionary<string, int> dist)
+        {
+            if (u != "NIL")
+            {
+                foreach (var v in vertices[u].Keys)
+                {
+                    if (dist[partV[v]] == dist[u] + 1)
+                    {
+                        if (DfsHopcroft(partV[v], partU, partV, dist))
+                        {
+                            partV[v] = u;
+                            partU[u] = v;
+                            return true;
+                        }
+                    }
+                }
+                dist[u] = int.MaxValue;
+                return false;
+            }
+            return true;
+        }
+
+        private bool BfsHopcroft(Dictionary<string, string> partU, Dictionary<string, string> partV, Dictionary<string, int> dist)
+        {
+            var q = new Queue<string>();
+
+            foreach (var u in partU.Keys)
+            {
+                if (partU[u] == "NIL")
+                {
+                    dist[u] = 0;
+                    q.Enqueue(u);
+                }
+                else
+                {
+                    dist[u] = int.MaxValue;
+                }
+            }
+
+            dist["NIL"] = int.MaxValue;
+
+            while (q.Count > 0)
+            {
+                string u = q.Dequeue();
+
+                if (dist[u] < dist["NIL"])
+                {
+                    foreach (var v in vertices[u].Keys)
+                    {
+                        if (dist[partV[v]] == int.MaxValue)
+                        {
+                            dist[partV[v]] = dist[u] + 1;
+                            q.Enqueue(partV[v]);
+                        }
+                    }
+                }
+            }
+
+            return dist["NIL"] != int.MaxValue;
         }
 
     }

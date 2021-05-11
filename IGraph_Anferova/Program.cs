@@ -17,9 +17,10 @@ namespace IGraph_Anferova
                 "2. Показать список смежности\n" +
                 "3. Проверка на двудольность\n" +
                 "4. Алгоритм Куна\n" +
-                "5. Алгоритм Форда-Фалкерсона\n");
+                "5. Алгоритм Форда-Фалкерсона\n" +
+                "6. Алгоритм Хопкрофта – Карпа");
             string n = Console.ReadLine();
-            while (n != "6")
+            while (n != "7")
             {
                 switch (n)
                 {
@@ -72,6 +73,22 @@ namespace IGraph_Anferova
                     case "5":
                         {
                             var fulk = graph.FordFulkerson();
+                            if (fulk != null)
+                            {
+                                foreach (var p in fulk)
+                                {
+                                    Console.WriteLine($"{p.Key} - {p.Value}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Граф не является двудольным. Выполнение алгоритма невозможно");
+                            }
+                            break;
+                        }
+                    case "6":
+                        {
+                            var fulk = graph.HopcroftKarp();
                             if (fulk != null)
                             {
                                 foreach (var p in fulk)

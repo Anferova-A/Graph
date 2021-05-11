@@ -312,7 +312,7 @@ namespace IGraph_Anferova
         /// (https://e-maxx.ru/algo/bipartite_checking)
         /// </summary>
         /// <returns>
-        /// True, если граф двудольный, в противном случе False
+        /// Cловарь разбиений, если граф двудольный, в противном случе null
         /// </returns>
         public IDictionary<string, Part> CheckBipartition()
         {
@@ -486,6 +486,99 @@ namespace IGraph_Anferova
             return result;
         }
         #endregion
+
+        /// <summary>
+        /// Алгоритм Форда-Фалкерсона для поиска максимального паросочетания
+        /// (<see href="link">https://clck.ru/EvgtS</see>)
+        /// </summary>
+        /// <returns>Словарь паросочетаний (Null, если граф не двудольный)</returns>
+        public IDictionary<string, string> FordFulkerson()
+        {
+            var fordGraph = new Graph(true);
+
+            var parts = CheckBipartition();
+
+            if (parts == null)
+                return null;
+
+            var firstPart = parts.Where(item => item.Value == Part.First)
+                                 .Select(item => item.Key);
+
+            var secondPart = parts.Where(item => item.Value == Part.Second)
+                                 .Select(item => item.Key);
+
+            var px = new Dictionary<string, string>();
+            foreach (var item in firstPart)
+            {
+                px.Add(item, null);
+            }
+
+
+            var py = new Dictionary<string, string>();
+            foreach (var item in secondPart)
+            {
+                py.Add(item, null);
+            }
+
+            var vis = new Dictionary<string, bool>();
+
+
+
+            bool isPath = true;
+
+            while (isPath)
+            {
+                isPath = false;
+
+                // fill
+                foreach (var item in vertecies.Keys)
+                {
+                    vis[item] = false;
+                }
+
+                foreach (var x in firstPart)
+                {
+                    if (px[x] == null)
+                    {
+                        isPath = DfsFord(x, px, py, vis);
+                    }
+                }
+            }
+
+
+
+            return px.Where(item => item.Value != null)
+                     .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        private bool DfsFord(string x, Dictionary<string, string> px, Dictionary<string, string> py, Dictionary<string, bool> vis)
+        {
+            if (vis[x])
+                return false;
+
+            vis[x] = true;
+
+            foreach (var y in vertecies[x].Keys)
+            {
+                if (py[y] == null)
+                {
+                    py[y] = x;
+                    px[x] = y;
+                    return true;
+                }
+                else
+                {
+                    if (DfsFord(py[y], px, py, vis))
+                    {
+                        py[y] = x;
+                        px[x] = y;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
     }
 

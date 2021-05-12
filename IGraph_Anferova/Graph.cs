@@ -628,10 +628,7 @@ namespace IGraph_Anferova
 
             DeleteVertex("NIL");
 
-            foreach (var item in partU)
-            {
-                Console.WriteLine($"{item.Key} - {item.Value}");
-            }
+            
             return partU.Where(item => item.Value != "NIL")
                         .ToDictionary(pair => pair.Key, pair => pair.Value);
         }

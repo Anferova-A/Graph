@@ -88,6 +88,7 @@ namespace IGraph_Anferova
         }
 
 
+
         public bool AddVertex(string vertexName)
         {
             if (!vertices.ContainsKey(vertexName))
@@ -388,11 +389,15 @@ namespace IGraph_Anferova
             var secondPart = parts.Where(item => item.Value == Part.Second)
                                  .Select(item => item.Key);
 
+
             var matching = new Dictionary<string, string>();
             foreach (var item in secondPart)
             {
                 matching.Add(item, null);
             }
+
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
 
             foreach (var item in firstPart)
             {
@@ -404,7 +409,8 @@ namespace IGraph_Anferova
 
                 DfsKun(item, used, matching);
             }
-
+            stopwatch.Stop();
+            Console.WriteLine($"Выполнено за: {stopwatch.ElapsedTicks}");
 
             return matching;
         }
@@ -521,7 +527,8 @@ namespace IGraph_Anferova
 
             var vis = new Dictionary<string, bool>();
 
-
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
 
             bool isPath = true;
 
@@ -544,7 +551,8 @@ namespace IGraph_Anferova
                 }
             }
 
-
+            stopwatch.Stop();
+            Console.WriteLine($"Выполнено за: {stopwatch.ElapsedTicks}");
 
             return px.Where(item => item.Value != null)
                      .ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -599,6 +607,7 @@ namespace IGraph_Anferova
             var secondPart = parts.Where(item => item.Value == Part.Second)
                                  .Select(item => item.Key);
 
+
             var partU = new Dictionary<string, string>();
             foreach (var u in firstPart)
             {
@@ -613,6 +622,9 @@ namespace IGraph_Anferova
 
             var dist = new Dictionary<string, int>();
 
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
             while (BfsHopcroft(partU, partV, dist))
             {
                 foreach (var u in firstPart)
@@ -625,6 +637,8 @@ namespace IGraph_Anferova
                 }
             }
 
+            stopwatch.Stop();
+            Console.WriteLine($"Выполнено за: {stopwatch.ElapsedTicks}");
 
             DeleteVertex("NIL");
 
